@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ProtectionCircle — IronFist VPN Tunnel &amp; Exit Node Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0d1116;
+      --bg-card: #131a22;
+      --bg-hover: #1a232e;
+      --border: #2d3845;
+      --accent: #58a6ff;
+      --accent-dim: #388bfd;
+      --shield: #3fb950;
+      --warn: #d29922;
+      --danger: #f85149;
+      --text: #e6edf3;
+      --text-dim: #8b949e;
+      --glow: rgba(88, 166, 255, 0.12);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.5; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 1.5rem; }
+    header {
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+      padding: 1rem 0; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem;
+    }
+    .logo { font-weight: 700; font-size: 1.5rem; color: var(--accent); letter-spacing: 0.03em; }
+    .logo span { color: var(--text-dim); font-weight: 500; }
+    .tagline { font-size: 0.8rem; color: var(--text-dim); margin-top: 0.2rem; }
+    .header-right { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .addr { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--shield); max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
+    .btn {
+      font-family: 'Outfit', sans-serif; font-weight: 500; padding: 0.5rem 1rem;
+      border: 1px solid var(--border); background: var(--bg-card); color: var(--text); cursor: pointer; border-radius: 6px; font-size: 0.9rem;
+    }
+    .btn:hover { border-color: var(--accent-dim); color: var(--accent); }
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+    .btn.primary:hover { box-shadow: 0 0 14px var(--glow); }
+    .btn.small { padding: 0.35rem 0.7rem; font-size: 0.85rem; }
+    .stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
+    .stat-label { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.25rem; }
+    .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 1rem; color: var(--accent); font-weight: 500; }
+    section { margin-bottom: 1.75rem; }
+    h2 { font-size: 1.05rem; color: var(--text); margin-bottom: 0.75rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border); }
+    .panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem; }
+    .panel h3 { font-size: 0.95rem; margin-bottom: 0.75rem; color: var(--text); }
+    .form-row { margin-bottom: 0.75rem; }
+    .form-row label { display: block; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 0.25rem; }
+    .form-row input, .form-row select {
+      width: 100%; max-width: 400px; padding: 0.45rem 0.65rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
+      background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px;
+    }
+    .form-row input:focus { outline: none; border-color: var(--accent); }
+    .msg { font-size: 0.85rem; margin-top: 0.5rem; padding: 0.45rem; border-radius: 4px; }
+    .msg.ok { background: rgba(63, 185, 80, 0.12); color: var(--shield); border: 1px solid rgba(63, 185, 80, 0.3); }
+    .msg.err { background: rgba(248, 81, 73, 0.12); color: var(--danger); border: 1px solid rgba(248, 81, 73, 0.3); }
+    .hero { text-align: center; padding: 1.75rem 1rem; margin-bottom: 1.5rem; background: linear-gradient(180deg, rgba(88,166,255,0.06) 0%, transparent 100%); border: 1px solid var(--border); border-radius: 8px; }
+    .hero h1 { font-size: 1.35rem; color: var(--accent); margin-bottom: 0.4rem; }
+    .hero p { color: var(--text-dim); font-size: 0.9rem; }
+    footer { text-align: center; padding: 1.5rem 0; font-size: 0.78rem; color: var(--text-dim); border-top: 1px solid var(--border); margin-top: 1.5rem; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th, td { padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+    th { color: var(--text-dim); font-weight: 500; }
+    td .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; word-break: break-all; }
+    .badge { display: inline-block; padding: 0.15rem 0.45rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+    .badge.active { background: rgba(63, 185, 80, 0.2); color: var(--shield); }
+    .badge.closed { background: rgba(139, 148, 158, 0.2); color: var(--text-dim); }
+    .badge.region { background: rgba(88, 166, 255, 0.2); color: var(--accent); }
+    .filter-row { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-bottom: 0.75rem; }
+    .filter-row select { padding: 0.4rem 0.6rem; font-size: 0.85rem; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px; }
