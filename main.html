@@ -229,3 +229,80 @@
       </div>
     </section>
 
+    <section>
+      <h2>Sessions</h2>
+      <div class="filter-row">
+        <label style="font-size:0.8rem;color:var(--text-dim);">Tunnel:</label>
+        <input type="text" id="filterSessionTunnel" placeholder="Tunnel ID or leave empty" />
+        <button type="button" class="btn small" id="btnRefreshSessions">Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <table id="sessionsTable">
+          <thead>
+            <tr><th>Session ID</th><th>Tunnel ID</th><th>Client</th></tr>
+          </thead>
+          <tbody id="sessionsBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Close tunnel</h2>
+      <div class="panel">
+        <h3>Close an existing tunnel (owner or gatekeeper)</h3>
+        <div class="form-row">
+          <label>Tunnel ID</label>
+          <input type="text" id="closeTunnelId" placeholder="e.g. my-tunnel-1" />
+        </div>
+        <div class="form-row">
+          <label>Caller (your address)</label>
+          <input type="text" id="closeCaller" placeholder="0x..." />
+        </div>
+        <button type="button" class="btn primary" id="btnCloseTunnel">Close tunnel</button>
+        <div id="closeMsg" class="msg" style="display:none;"></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Network info</h2>
+      <div class="panel">
+        <p style="font-size:0.9rem;color:var(--text-dim);">
+          Gatekeeper: <span class="mono copyable" id="infoGatekeeper" title="Click to copy">0xb2f8c1e4a6d9f0b3c5e7a9d1f4b6c8e0a2d5f7b9</span><br />
+          Treasury: <span class="mono copyable" id="infoTreasury" title="Click to copy">0xc3a9d2e5f8b1c4e7a0d3f6b9c2e5a8d1f4b7c0e3</span><br />
+          Relay: <span class="mono copyable" id="infoRelay" title="Click to copy">0xd4b0e3f6a9c2d5e8b1f4a7c0d3e6f9a2b5c8d1e4f7</span><br />
+          Namespace: <span class="mono copyable" title="Click to copy">0xe5c1d4f7a0b3c6e9d2f5a8b1c4e7d0f3a6b9c2e5f8</span>
+        </p>
+        <p style="font-size:0.75rem;color:var(--text-dim);margin-top:0.5rem;">Click any address to copy to clipboard.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>About &amp; security</h2>
+      <div class="panel">
+        <p style="font-size:0.9rem;color:var(--text-dim);margin-bottom:0.75rem;">ProtectionCircle is a read-and-write dashboard for the IronFist contract. All on-chain actions (open tunnel, bind session, close tunnel) require a connected wallet. The gatekeeper address can register exit nodes and pause the network; only the treasury and relay addresses are shown for reference.</p>
+        <p style="font-size:0.85rem;color:var(--text-dim);">This interface is not audited. Verify contract addresses and behavior before use on mainnet. IronFist uses immutable constructor addresses for gatekeeper, treasury, and relay.</p>
+        <p style="font-size:0.8rem;color:var(--text-dim);margin-top:0.5rem;">Addresses shown in Network info are fixed at IronFist deployment and cannot be changed.</p>
+        <p style="font-size:0.78rem;color:var(--text-dim);margin-top:0.35rem;">For production, always confirm you are interacting with the intended chain and contract.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Quick reference: who can call what</h2>
+      <div class="panel">
+        <table style="font-size:0.85rem;">
+          <tr><th style="text-align:left;padding:0.4rem 0.5rem 0.4rem 0;">Action</th><th style="text-align:left;padding:0.4rem 0;">Caller</th></tr>
+          <tr><td style="padding:0.35rem 0.5rem 0.35rem 0;">register_exit_node</td><td style="padding:0.35rem 0;">Gatekeeper only</td></tr>
+          <tr><td style="padding:0.35rem 0.5rem 0.35rem 0;">open_tunnel</td><td style="padding:0.35rem 0;">Anyone (when not paused)</td></tr>
+          <tr><td style="padding:0.35rem 0.5rem 0.35rem 0;">bind_session</td><td style="padding:0.35rem 0;">Anyone (when not paused)</td></tr>
+          <tr><td style="padding:0.35rem 0.5rem 0.35rem 0;">close_tunnel</td><td style="padding:0.35rem 0;">Tunnel owner or gatekeeper</td></tr>
+          <tr><td style="padding:0.35rem 0.5rem 0.35rem 0;">pause_network / resume_network</td><td style="padding:0.35rem 0;">Gatekeeper only</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Runbook &amp; reference</h2>
+      <div class="panel">
+        <h3>IronFist steps</h3>
+        <ol style="font-size:0.9rem;color:var(--text-dim);margin-left:1.25rem;margin-bottom:1rem;">
+          <li>Gatekeeper registers exit node (node_id, region, endpoint_hex)</li>
