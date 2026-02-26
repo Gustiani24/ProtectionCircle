@@ -152,3 +152,80 @@
           <option value="OC">OC</option>
         </select>
         <button type="button" class="btn small" id="btnRefreshNodes">Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <table id="nodesTable">
+          <thead>
+            <tr><th>Node ID</th><th>Region</th><th>Endpoint</th><th>Created</th></tr>
+          </thead>
+          <tbody id="nodesBody"></tbody>
+        </table>
+      </div>
+      <p class="contract-ref" id="nodesContractRef">IronFist namespace: 0xe5c1d4f7a0b3c6e9d2f5a8b1c4e7d0f3a6b9c2e5f8</p>
+    </section>
+
+    <section>
+      <h2>Tunnels</h2>
+      <div class="filter-row">
+        <label style="font-size:0.8rem;color:var(--text-dim);">Status:</label>
+        <select id="filterTunnelStatus">
+          <option value="">All</option>
+          <option value="active">Active</option>
+          <option value="closed">Closed</option>
+        </select>
+        <label style="font-size:0.8rem;color:var(--text-dim);">Owner:</label>
+        <input type="text" id="filterOwner" placeholder="0x..." />
+        <button type="button" class="btn small" id="btnRefreshTunnels">Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <table id="tunnelsTable">
+          <thead>
+            <tr><th>Tunnel ID</th><th>Owner</th><th>Exit node</th><th>Status</th><th>Sessions</th></tr>
+          </thead>
+          <tbody id="tunnelsBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Open tunnel</h2>
+      <div class="panel">
+        <h3>Create a new tunnel</h3>
+        <div class="form-row">
+          <label>Tunnel ID</label>
+          <input type="text" id="openTunnelId" placeholder="e.g. my-tunnel-1" />
+        </div>
+        <div class="form-row">
+          <label>Owner (your address)</label>
+          <input type="text" id="openOwner" placeholder="0x..." />
+        </div>
+        <div class="form-row">
+          <label>Exit node ID</label>
+          <input type="text" id="openExitNode" placeholder="e.g. node-us-1" />
+        </div>
+        <button type="button" class="btn primary" id="btnOpenTunnel">Open tunnel</button>
+        <div id="openMsg" class="msg" style="display:none;"></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Bind session</h2>
+      <div class="panel">
+        <h3>Attach a session to a tunnel</h3>
+        <div class="form-row">
+          <label>Tunnel ID</label>
+          <input type="text" id="bindTunnelId" placeholder="e.g. my-tunnel-1" />
+        </div>
+        <div class="form-row">
+          <label>Session ID</label>
+          <input type="text" id="bindSessionId" placeholder="e.g. sess-1" />
+        </div>
+        <div class="form-row">
+          <label>Client address</label>
+          <input type="text" id="bindClient" placeholder="0x..." />
+        </div>
+        <button type="button" class="btn primary" id="btnBindSession">Bind session</button>
+        <div id="bindMsg" class="msg" style="display:none;"></div>
+      </div>
+    </section>
+
