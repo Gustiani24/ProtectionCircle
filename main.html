@@ -306,3 +306,80 @@
         <h3>IronFist steps</h3>
         <ol style="font-size:0.9rem;color:var(--text-dim);margin-left:1.25rem;margin-bottom:1rem;">
           <li>Gatekeeper registers exit node (node_id, region, endpoint_hex)</li>
+          <li>User opens tunnel (tunnel_id, owner, exit_node_id)</li>
+          <li>User binds session (tunnel_id, session_id, client)</li>
+          <li>Owner or gatekeeper closes tunnel (tunnel_id)</li>
+          <li>Gatekeeper may pause or resume network</li>
+        </ol>
+        <h3>Example: open tunnel</h3>
+        <div class="code-block">open_tunnel("my-tunnel-1", "0xYourAddress...", "node-us-1")</div>
+        <h3>Example: bind session</h3>
+        <div class="code-block">bind_session("my-tunnel-1", "sess-1", "0xClientAddress...")</div>
+        <h3>Example: close tunnel (owner or gatekeeper)</h3>
+        <div class="code-block">close_tunnel("my-tunnel-1")  # caller must be owner or gatekeeper</div>
+        <h3>Example: register exit node (gatekeeper only)</h3>
+        <div class="code-block">register_exit_node("node-ap-1", "AP", "0x0c03")  # gatekeeper only</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Limits &amp; caps</h2>
+      <div class="panel">
+        <table style="font-size:0.9rem;">
+          <tr><td style="padding:0.35rem 0.5rem 0.35rem 0;">Max exit nodes</td><td style="padding:0.35rem 0;">48</td></tr>
+          <tr><td style="padding:0.35rem 0.5rem 0.35rem 0;">Max tunnels</td><td style="padding:0.35rem 0;">256</td></tr>
+          <tr><td style="padding:0.35rem 0.5rem 0.35rem 0;">Max sessions per tunnel</td><td style="padding:0.35rem 0;">64</td></tr>
+          <tr><td style="padding:0.35rem 0.5rem 0.35rem 0;">Max region length</td><td style="padding:0.35rem 0;">8</td></tr>
+          <tr><td style="padding:0.35rem 0.5rem 0.35rem 0;">Max label (tunnel/session/node id)</td><td style="padding:0.35rem 0;">64</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Glossary</h2>
+      <div class="panel">
+        <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:0.5rem;"><strong>Gatekeeper</strong> — Address that can register exit nodes and pause/resume the network. Set at deployment.</p>
+        <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:0.5rem;"><strong>Exit node</strong> — A registered routing endpoint with a region and endpoint identifier.</p>
+        <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:0.5rem;"><strong>Tunnel</strong> — A channel opened by an owner and bound to one exit node. Can have multiple sessions.</p>
+        <p style="font-size:0.85rem;color:var(--text-dim);"><strong>Session</strong> — A client address bound to a tunnel. Used for routing or access control.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Error codes (IronFist)</h2>
+      <div class="panel">
+        <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:0.75rem;">Contract revert codes you may see when a call fails:</p>
+        <ul style="font-size:0.85rem;color:var(--text-dim);margin-left:1.25rem;line-height:1.7;">
+          <li><strong>IF_ZERO_ADDR</strong> — Invalid or zero address</li>
+          <li><strong>IF_NOT_GATEKEEPER</strong> — Caller is not gatekeeper</li>
+          <li><strong>IF_NETWORK_PAUSED</strong> — Network is paused</li>
+          <li><strong>IF_INVALID_NODE_ID</strong> — Exit node id empty or too long</li>
+          <li><strong>IF_INVALID_REGION</strong> — Region empty or too long</li>
+          <li><strong>IF_NODE_EXISTS</strong> — Exit node already exists</li>
+          <li><strong>IF_NODE_CAP</strong> — Exit node limit reached</li>
+          <li><strong>IF_NODE_MISSING</strong> — Exit node not found</li>
+          <li><strong>IF_INVALID_TUNNEL_ID</strong> — Tunnel id empty or too long</li>
+          <li><strong>IF_TUNNEL_EXISTS</strong> — Tunnel already exists</li>
+          <li><strong>IF_TUNNEL_CAP</strong> — Tunnel limit reached</li>
+          <li><strong>IF_TUNNEL_MISSING</strong> — Tunnel not found</li>
+          <li><strong>IF_TUNNEL_CLOSED</strong> — Tunnel already closed</li>
+          <li><strong>IF_INVALID_SESSION_ID</strong> — Session id empty or too long</li>
+          <li><strong>IF_SESSION_CAP</strong> — Session limit per tunnel reached</li>
+          <li><strong>IF_SESSION_EXISTS</strong> — Session already bound</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>Events (IronFist)</h2>
+      <div class="panel">
+        <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:0.5rem;">Emitted by the contract:</p>
+        <ul style="font-size:0.85rem;color:var(--text-dim);margin-left:1.25rem;line-height:1.6;">
+          <li><strong>ExitNodeRegistered</strong> — node_id, region, endpoint_hex, at_block</li>
+          <li><strong>TunnelOpened</strong> — tunnel_id, owner, exit_node_id, at_block</li>
+          <li><strong>SessionBound</strong> — tunnel_id, session_id, client, at_block</li>
+          <li><strong>TunnelClosed</strong> — tunnel_id, at_block</li>
+          <li><strong>NetworkPaused</strong> — by, at_block</li>
+          <li><strong>NetworkResumed</strong> — by, at_block</li>
+        </ul>
+      </div>
