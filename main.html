@@ -75,3 +75,80 @@
     .badge.region { background: rgba(88, 166, 255, 0.2); color: var(--accent); }
     .filter-row { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-bottom: 0.75rem; }
     .filter-row select { padding: 0.4rem 0.6rem; font-size: 0.85rem; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px; }
+    .filter-row input[type="text"] { max-width: 220px; padding: 0.4rem 0.6rem; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px; }
+    .accordion { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .accordion-item { border-bottom: 1px solid var(--border); }
+    .accordion-item:last-child { border-bottom: none; }
+    .accordion-head { padding: 0.85rem 1rem; background: var(--bg-card); cursor: pointer; font-weight: 500; font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center; }
+    .accordion-head:hover { background: var(--bg-hover); }
+    .accordion-body { padding: 1rem 1.25rem; background: var(--bg); font-size: 0.9rem; color: var(--text-dim); line-height: 1.6; }
+    .faq-list { list-style: none; }
+    .faq-list li { margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+    .faq-list li:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+    .faq-q { font-weight: 600; color: var(--text); margin-bottom: 0.35rem; }
+    .faq-a { color: var(--text-dim); font-size: 0.88rem; }
+    .contract-ref { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-dim); margin-top: 0.5rem; word-break: break-all; }
+    .copyable { cursor: pointer; padding: 0.1rem 0.2rem; border-radius: 3px; }
+    .copyable:hover { background: var(--bg-hover); color: var(--accent); }
+    .code-block { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.75rem; margin: 0.5rem 0; overflow-x: auto; color: var(--text-dim); }
+    .loading { opacity: 0.7; pointer-events: none; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .panel { animation: fadeIn 0.2s ease; }
+    @media (max-width: 640px) { .table-wrap { font-size: 0.8rem; } .filter-row { flex-direction: column; align-items: stretch; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div class="logo">ProtectionCircle <span>× IronFist</span></div>
+        <div class="tagline">Private tunnel &amp; exit-node dashboard — connect and manage VPN-style sessions.</div>
+      </div>
+      <div class="header-right">
+        <span id="walletAddr" class="addr" style="display:none;"></span>
+        <button type="button" class="btn primary" id="btnConnect">Connect</button>
+        <input type="text" id="contractAddr" placeholder="Contract (optional)" style="width:200px;padding:0.4rem;font-size:0.8rem;font-family:JetBrains Mono,monospace;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:4px;" />
+      </div>
+    </header>
+
+    <div class="hero">
+      <h1>ProtectionCircle</h1>
+      <p>View exit nodes, open tunnels, and bind sessions to the IronFist network. Gatekeeper registers nodes; you open tunnels and attach clients.</p>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-label">Exit nodes</div>
+        <div class="stat-value" id="statNodes">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Tunnels</div>
+        <div class="stat-value" id="statTunnels">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Active tunnels</div>
+        <div class="stat-value" id="statActive">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Sessions</div>
+        <div class="stat-value" id="statSessions">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Network</div>
+        <div class="stat-value" id="statPaused">—</div>
+      </div>
+    </div>
+
+    <section>
+      <h2>Exit nodes</h2>
+      <div class="filter-row">
+        <label style="font-size:0.8rem;color:var(--text-dim);">Region:</label>
+        <select id="filterRegion">
+          <option value="">All</option>
+          <option value="US">US</option>
+          <option value="EU">EU</option>
+          <option value="AP">AP</option>
+          <option value="SA">SA</option>
+          <option value="OC">OC</option>
+        </select>
+        <button type="button" class="btn small" id="btnRefreshNodes">Refresh</button>
