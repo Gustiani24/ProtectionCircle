@@ -460,3 +460,80 @@
           <tr><td style="padding:0.3rem 0.75rem 0.3rem 0;">EU</td><td style="padding:0.3rem 0;">Europe</td></tr>
           <tr><td style="padding:0.3rem 0.75rem 0.3rem 0;">AP</td><td style="padding:0.3rem 0;">Asia-Pacific</td></tr>
           <tr><td style="padding:0.3rem 0.75rem 0.3rem 0;">SA</td><td style="padding:0.3rem 0;">South America</td></tr>
+          <tr><td style="padding:0.3rem 0.75rem 0.3rem 0;">AF</td><td style="padding:0.3rem 0;">Africa</td></tr>
+          <tr><td style="padding:0.3rem 0.75rem 0.3rem 0;">OC</td><td style="padding:0.3rem 0;">Oceania</td></tr>
+          <tr><td style="padding:0.3rem 0.75rem 0.3rem 0;">ME</td><td style="padding:0.3rem 0;">Middle East</td></tr>
+          <tr><td style="padding:0.3rem 0.75rem 0.3rem 0;">XX</td><td style="padding:0.3rem 0;">Unknown / default</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <footer>
+      <p>ProtectionCircle × IronFist — Tunnel &amp; exit-node dashboard. Not audited. Use at your own risk.</p>
+      <p style="margin-top:0.5rem;">Namespace: 0xe5c1d4f7a0b3c6e9d2f5a8b1c4e7d0f3a6b9c2e5f8 &nbsp;|&nbsp; Chain: 0x7f3c</p>
+      <p style="margin-top:0.35rem;font-size:0.72rem;">Best viewed with a modern browser; wallet connect requires an injected provider (e.g. MetaMask).</p>
+      <p style="margin-top:0.25rem;font-size:0.72rem;">ProtectionCircle v1 — IronFist namespace 0xe5c1d4f7a0b3c6e9d2f5a8b1c4e7d0f3a6b9c2e5f8.</p>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      const CONFIG = {
+        gatekeeper: '0xb2f8c1e4a6d9f0b3c5e7a9d1f4b6c8e0a2d5f7b9',
+        treasury: '0xc3a9d2e5f8b1c4e7a0d3f6b9c2e5a8d1f4b7c0e3',
+        relay: '0xd4b0e3f6a9c2d5e8b1f4a7c0d3e6f9a2b5c8d1e4f7',
+        namespace: '0xe5c1d4f7a0b3c6e9d2f5a8b1c4e7d0f3a6b9c2e5f8',
+        chainId: '0x7f3c'
+      };
+
+      let walletAddr = '';
+      let contractAddr = '';
+
+      const el = (id) => document.getElementById(id);
+      const showMsg = (id, text, ok) => {
+        const m = el(id);
+        if (!m) return;
+        m.textContent = text;
+        m.className = 'msg ' + (ok ? 'ok' : 'err');
+        m.style.display = 'block';
+      };
+
+      function renderStats(data) {
+        if (!data) return;
+        el('statNodes').textContent = data.exitNodes ?? 0;
+        el('statTunnels').textContent = data.tunnels ?? 0;
+        el('statActive').textContent = data.activeTunnels ?? 0;
+        el('statSessions').textContent = data.sessions ?? 0;
+        el('statPaused').textContent = data.paused ? 'Paused' : 'Active';
+      }
+
+      function renderNodes(nodes, regionFilter) {
+        const tbody = el('nodesBody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        const list = !regionFilter ? nodes : (nodes || []).filter(n => (n.region || '').toUpperCase() === regionFilter.toUpperCase());
+        (list || []).forEach(n => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = '<td class="mono">' + escapeHtml(n.nodeId || '') + '</td><td><span class="badge region">' + escapeHtml(n.region || '') + '</span></td><td class="mono">' + escapeHtml(n.endpointHex || '') + '</td><td>' + (n.createdAt ?? '') + '</td>';
+          tbody.appendChild(tr);
+        });
+      }
+
+      function renderTunnels(tunnels, statusFilter, ownerFilter) {
+        const tbody = el('tunnelsBody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        let list = tunnels || [];
+        if (statusFilter === 'active') list = list.filter(t => !t.closed);
+        if (statusFilter === 'closed') list = list.filter(t => t.closed);
+        if (ownerFilter && ownerFilter.trim()) {
+          const o = ownerFilter.trim().toLowerCase();
+          list = list.filter(t => (t.owner || '').toLowerCase().includes(o));
+        }
+        list.forEach(t => {
+          const tr = document.createElement('tr');
+          const statusBadge = t.closed ? '<span class="badge closed">Closed</span>' : '<span class="badge active">Active</span>';
+          tr.innerHTML = '<td class="mono">' + escapeHtml(t.tunnelId || '') + '</td><td class="mono">' + shortAddr(t.owner) + '</td><td class="mono">' + escapeHtml(t.exitNodeId || '') + '</td><td>' + statusBadge + '</td><td>' + (t.sessionCount ?? 0) + '</td>';
+          tbody.appendChild(tr);
+        });
+      }
