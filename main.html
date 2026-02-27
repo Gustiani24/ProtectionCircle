@@ -614,3 +614,72 @@
       });
       el('filterTunnelStatus').addEventListener('change', () => {
         const tunnels = [{ tunnelId: 'tunnel-1', owner: CONFIG.gatekeeper, exitNodeId: 'node-us-1', closed: false, sessionCount: 2 }, { tunnelId: 'tunnel-2', owner: CONFIG.treasury, exitNodeId: 'node-eu-1', closed: false, sessionCount: 0 }];
+        renderTunnels(tunnels, el('filterTunnelStatus').value, el('filterOwner').value);
+      });
+      el('filterOwner').addEventListener('input', () => {
+        const tunnels = [{ tunnelId: 'tunnel-1', owner: CONFIG.gatekeeper, exitNodeId: 'node-us-1', closed: false, sessionCount: 2 }, { tunnelId: 'tunnel-2', owner: CONFIG.treasury, exitNodeId: 'node-eu-1', closed: false, sessionCount: 0 }];
+        renderTunnels(tunnels, el('filterTunnelStatus').value, el('filterOwner').value);
+      });
+
+      el('btnOpenTunnel').addEventListener('click', () => {
+        const tunnelId = el('openTunnelId').value.trim();
+        const owner = (el('openOwner').value || walletAddr || '').trim();
+        const exitNode = el('openExitNode').value.trim();
+        if (!tunnelId || !owner || !exitNode) { showMsg('openMsg', 'Fill tunnel ID, owner, and exit node.', false); return; }
+        if (!/^0x[a-fA-F0-9]{40}$/.test(owner)) { showMsg('openMsg', 'Invalid owner address.', false); return; }
+        showMsg('openMsg', 'Open tunnel would be sent to contract (no backend in this demo). Owner: ' + shortAddr(owner) + ', exit: ' + exitNode, true);
+      });
+
+      el('btnBindSession').addEventListener('click', () => {
+        const tunnelId = el('bindTunnelId').value.trim();
+        const sessionId = el('bindSessionId').value.trim();
+        const client = (el('bindClient').value || walletAddr || '').trim();
+        if (!tunnelId || !sessionId || !client) { showMsg('bindMsg', 'Fill tunnel ID, session ID, and client.', false); return; }
+        if (!/^0x[a-fA-F0-9]{40}$/.test(client)) { showMsg('bindMsg', 'Invalid client address.', false); return; }
+        showMsg('bindMsg', 'Bind session would be sent to contract (no backend in this demo). Session: ' + sessionId, true);
+      });
+
+      el('btnRefreshSessions').addEventListener('click', () => {
+        renderSessions(mockSessions, el('filterSessionTunnel').value);
+      });
+      if (el('filterSessionTunnel')) el('filterSessionTunnel').addEventListener('input', () => { renderSessions(mockSessions, el('filterSessionTunnel').value); });
+
+      el('btnCloseTunnel').addEventListener('click', () => {
+        const tunnelId = el('closeTunnelId').value.trim();
+        const caller = (el('closeCaller').value || walletAddr || '').trim();
+        if (!tunnelId || !caller) { showMsg('closeMsg', 'Fill tunnel ID and caller address.', false); return; }
+        if (!/^0x[a-fA-F0-9]{40}$/.test(caller)) { showMsg('closeMsg', 'Invalid caller address.', false); return; }
+        showMsg('closeMsg', 'Close tunnel would be sent to contract (no backend in this demo). Tunnel: ' + tunnelId, true);
+      });
+
+      document.querySelectorAll('.accordion-body').forEach(b => { b.style.display = 'none'; });
+      document.querySelectorAll('.accordion-head').forEach((head, i) => {
+        head.addEventListener('click', () => {
+          const body = head.nextElementSibling;
+          if (body) body.style.display = body.style.display === 'none' ? 'block' : 'none';
+        });
+        if (i === 0 && head.nextElementSibling) head.nextElementSibling.style.display = 'block';
+      });
+
+      document.querySelectorAll('.copyable').forEach(el_ => {
+        el_.addEventListener('click', () => {
+          const text = el_.textContent || '';
+          if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(() => { showMsg('openMsg', 'Copied to clipboard.', true); }).catch(() => {});
+          else showMsg('openMsg', text, true);
+        });
+      });
+
+      if (el('closeCaller')) el('closeCaller').value = walletAddr || CONFIG.gatekeeper;
+      loadMockData();
+
+      function refreshAll() {
+        loadMockData();
+        if (el('filterRegion')) renderNodes([{ nodeId: 'node-us-1', region: 'US', endpointHex: '0x0a01', createdAt: '' }, { nodeId: 'node-eu-1', region: 'EU', endpointHex: '0x0b02', createdAt: '' }, { nodeId: 'node-ap-1', region: 'AP', endpointHex: '0x0c03', createdAt: '' }], el('filterRegion').value);
+        if (el('filterTunnelStatus') && el('filterOwner')) renderTunnels([{ tunnelId: 'tunnel-1', owner: CONFIG.gatekeeper, exitNodeId: 'node-us-1', closed: false, sessionCount: 2 }, { tunnelId: 'tunnel-2', owner: CONFIG.treasury, exitNodeId: 'node-eu-1', closed: false, sessionCount: 0 }], el('filterTunnelStatus').value, el('filterOwner').value);
+        renderSessions(mockSessions, el('filterSessionTunnel') && el('filterSessionTunnel').value);
+      }
+    })();
+  </script>
+</body>
+</html>
+
