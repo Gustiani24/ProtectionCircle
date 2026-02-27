@@ -383,3 +383,80 @@
           <li><strong>NetworkResumed</strong> — by, at_block</li>
         </ul>
       </div>
+    </section>
+
+    <section>
+      <h2>Constants</h2>
+      <div class="panel">
+        <p style="font-size:0.85rem;color:var(--text-dim);">
+          IF_MAX_TUNNELS: 256 &nbsp;|&nbsp; IF_MAX_EXIT_NODES: 48 &nbsp;|&nbsp; IF_MAX_SESSIONS_PER_TUNNEL: 64<br />
+          Chain ID: 0x7f3c &nbsp;|&nbsp; Version: 1.2.0
+        </p>
+        <p style="font-size:0.8rem;color:var(--text-dim);margin-top:0.5rem;">Gas estimates (off-chain reference): register_exit_node ~95k, open_tunnel ~78k, bind_session ~65k, close_tunnel ~52k, pause/resume ~35k.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>FAQ</h2>
+      <div class="accordion">
+        <div class="accordion-item">
+          <div class="accordion-head">What is ProtectionCircle?</div>
+          <div class="accordion-body">ProtectionCircle is the web interface for the IronFist VPN-style tunnel and exit-node registry. It shows exit nodes, tunnels, and sessions and lets you open tunnels and bind sessions when connected.</div>
+        </div>
+        <div class="accordion-item">
+          <div class="accordion-head">What is an exit node?</div>
+          <div class="accordion-body">Exit nodes are registered by the gatekeeper. Each has a region (e.g. US, EU) and an endpoint. Tunnels are bound to one exit node and route traffic through it.</div>
+        </div>
+        <div class="accordion-item">
+          <div class="accordion-head">How do I open a tunnel?</div>
+          <div class="accordion-body">Enter a unique tunnel ID, your owner address, and an existing exit node ID. Click Open tunnel. You must be connected (or simulate) for the action to be sent to the contract.</div>
+        </div>
+        <div class="accordion-item">
+          <div class="accordion-head">What is a session?</div>
+          <div class="accordion-body">A session is a client bound to a tunnel. You provide the tunnel ID, a unique session ID, and the client address. Sessions count toward the tunnel limit.</div>
+        </div>
+        <div class="accordion-item">
+          <div class="accordion-head">Who can close a tunnel?</div>
+          <div class="accordion-body">The tunnel owner or the gatekeeper can close a tunnel. Once closed, no new sessions can be bound to it.</div>
+        </div>
+        <div class="accordion-item">
+          <div class="accordion-head">What happens when the network is paused?</div>
+          <div class="accordion-body">When the gatekeeper pauses the network, no new exit nodes, tunnels, or sessions can be created. Existing tunnels and sessions remain until the network is resumed.</div>
+        </div>
+        <div class="accordion-item">
+          <div class="accordion-head">Where is the IronFist contract?</div>
+          <div class="accordion-body">IronFist is provided as a Python reference implementation (IronFist.py). For EVM deployment you would compile an equivalent Solidity or Vyper contract with the same logic and immutable addresses. ProtectionCircle then talks to that deployed contract via wallet and RPC.</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Data &amp; demo mode</h2>
+      <div class="panel">
+        <p style="font-size:0.9rem;color:var(--text-dim);">When no wallet is connected, ProtectionCircle shows mock data: three exit nodes (US, EU, AP), two tunnels, and two sessions. After connecting a wallet (e.g. MetaMask), you can use the same UI to trigger transactions; in this demo build there is no backend, so "Open tunnel", "Bind session", and "Close tunnel" only display a confirmation message. For production, wire the buttons to your IronFist contract ABI and provider.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Integration notes</h2>
+      <div class="panel">
+        <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:0.5rem;">To connect this UI to a deployed IronFist contract:</p>
+        <ul style="font-size:0.85rem;color:var(--text-dim);margin-left:1.25rem;line-height:1.7;">
+          <li>Obtain the contract ABI (from the Python IronFist module or compiled artifact).</li>
+          <li>Set the contract address in the header input or from your config.</li>
+          <li>Call contract methods (register_exit_node, open_tunnel, bind_session, close_tunnel, pause_network, resume_network) via ethers.js or web3.js using the connected wallet as sender.</li>
+          <li>Read exit nodes, tunnels, and sessions via view functions and update the tables on load or after each transaction.</li>
+        </ul>
+        <p style="font-size:0.85rem;color:var(--text-dim);margin-top:0.75rem;">All constructor-set addresses (gatekeeper, treasury, relay) are immutable and cannot be changed after deployment.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Region codes</h2>
+      <div class="panel">
+        <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:0.5rem;">Exit nodes use short region labels (max 8 chars). Common codes:</p>
+        <table style="font-size:0.85rem;">
+          <tr><td style="padding:0.3rem 0.75rem 0.3rem 0;">US</td><td style="padding:0.3rem 0;">United States</td></tr>
+          <tr><td style="padding:0.3rem 0.75rem 0.3rem 0;">EU</td><td style="padding:0.3rem 0;">Europe</td></tr>
+          <tr><td style="padding:0.3rem 0.75rem 0.3rem 0;">AP</td><td style="padding:0.3rem 0;">Asia-Pacific</td></tr>
+          <tr><td style="padding:0.3rem 0.75rem 0.3rem 0;">SA</td><td style="padding:0.3rem 0;">South America</td></tr>
