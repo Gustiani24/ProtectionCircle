@@ -537,3 +537,80 @@
           tbody.appendChild(tr);
         });
       }
+
+      function escapeHtml(s) {
+        const div = document.createElement('div');
+        div.textContent = s;
+        return div.innerHTML;
+      }
+
+      function shortAddr(addr) {
+        if (!addr || addr.length < 12) return addr || '';
+        return addr.slice(0, 8) + '…' + addr.slice(-6);
+      }
+
+      const mockSessions = [
+        { sessionId: 'sess-1', tunnelId: 'tunnel-1', client: CONFIG.gatekeeper },
+        { sessionId: 'sess-2', tunnelId: 'tunnel-1', client: CONFIG.treasury }
+      ];
+
+      function renderSessions(sessions, tunnelFilter) {
+        const tbody = el('sessionsBody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        let list = sessions || [];
+        if (tunnelFilter && tunnelFilter.trim()) {
+          const t = tunnelFilter.trim().toLowerCase();
+          list = list.filter(s => (s.tunnelId || '').toLowerCase().includes(t));
+        }
+        list.forEach(s => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = '<td class="mono">' + escapeHtml(s.sessionId || '') + '</td><td class="mono">' + escapeHtml(s.tunnelId || '') + '</td><td class="mono">' + shortAddr(s.client) + '</td>';
+          tbody.appendChild(tr);
+        });
+      }
+
+      function loadMockData() {
+        const mockNodes = [
+          { nodeId: 'node-us-1', region: 'US', endpointHex: '0x0a01', createdAt: Math.floor(Date.now() / 1000) - 3600 },
+          { nodeId: 'node-eu-1', region: 'EU', endpointHex: '0x0b02', createdAt: Math.floor(Date.now() / 1000) - 1800 },
+          { nodeId: 'node-ap-1', region: 'AP', endpointHex: '0x0c03', createdAt: Math.floor(Date.now() / 1000) - 7200 }
+        ];
+        const mockTunnels = [
+          { tunnelId: 'tunnel-1', owner: CONFIG.gatekeeper, exitNodeId: 'node-us-1', closed: false, sessionCount: 2 },
+          { tunnelId: 'tunnel-2', owner: CONFIG.treasury, exitNodeId: 'node-eu-1', closed: false, sessionCount: 0 }
+        ];
+        renderStats({ exitNodes: 3, tunnels: 2, activeTunnels: 2, sessions: 2, paused: false });
+        renderNodes(mockNodes);
+        renderTunnels(mockTunnels);
+        renderSessions(mockSessions, el('filterSessionTunnel') && el('filterSessionTunnel').value);
+      }
+
+      function connectWallet() {
+        if (typeof window.ethereum !== 'undefined') {
+          window.ethereum.request({ method: 'eth_requestAccounts' }).then(accounts => {
+            walletAddr = (accounts && accounts[0]) || '';
+            const a = el('walletAddr');
+            if (a) { a.textContent = walletAddr; a.style.display = 'inline'; }
+            if (el('openOwner')) el('openOwner').value = walletAddr;
+            if (el('bindClient')) el('bindClient').value = walletAddr;
+            if (el('closeCaller')) el('closeCaller').value = walletAddr;
+          }).catch(() => { showMsg('openMsg', 'Connection denied', false); });
+        } else {
+          walletAddr = CONFIG.gatekeeper;
+          const a = el('walletAddr');
+          if (a) { a.textContent = 'No wallet — demo mode'; a.style.display = 'inline'; }
+          loadMockData();
+        }
+      }
+
+      el('btnConnect').addEventListener('click', connectWallet);
+      el('btnRefreshNodes').addEventListener('click', () => { loadMockData(); renderNodes([{ nodeId: 'node-us-1', region: 'US', endpointHex: '0x0a01', createdAt: '' }, { nodeId: 'node-eu-1', region: 'EU', endpointHex: '0x0b02', createdAt: '' }, { nodeId: 'node-ap-1', region: 'AP', endpointHex: '0x0c03', createdAt: '' }], el('filterRegion').value); });
+      el('btnRefreshTunnels').addEventListener('click', () => { loadMockData(); renderTunnels([{ tunnelId: 'tunnel-1', owner: CONFIG.gatekeeper, exitNodeId: 'node-us-1', closed: false, sessionCount: 2 }, { tunnelId: 'tunnel-2', owner: CONFIG.treasury, exitNodeId: 'node-eu-1', closed: false, sessionCount: 0 }], el('filterTunnelStatus').value, el('filterOwner').value); });
+
+      el('filterRegion').addEventListener('change', () => {
+        const nodes = [{ nodeId: 'node-us-1', region: 'US', endpointHex: '0x0a01', createdAt: '' }, { nodeId: 'node-eu-1', region: 'EU', endpointHex: '0x0b02', createdAt: '' }, { nodeId: 'node-ap-1', region: 'AP', endpointHex: '0x0c03', createdAt: '' }];
+        renderNodes(nodes, el('filterRegion').value);
+      });
+      el('filterTunnelStatus').addEventListener('change', () => {
+        const tunnels = [{ tunnelId: 'tunnel-1', owner: CONFIG.gatekeeper, exitNodeId: 'node-us-1', closed: false, sessionCount: 2 }, { tunnelId: 'tunnel-2', owner: CONFIG.treasury, exitNodeId: 'node-eu-1', closed: false, sessionCount: 0 }];
